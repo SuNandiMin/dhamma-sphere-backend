@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# dhamma-sphere-backend
-=======
 # Dhamma Sphere Backend
 
 Laravel REST API for the Vue frontend in `C:\Users\User\Downloads\dhamma-sphere`.
@@ -131,4 +128,3 @@ Every endpoint is available under `/api/v1/...`. The current Vue-compatible alia
 - Authors and publishers automatically get one shop profile.
 - Payments are mocked but stored in the `payments` table, so Stripe can be added behind `OrderController::checkout`.
 - Doctrine AI translation is mocked in `DoctrineController::translate`; replace that method with an OpenAI service when you are ready.
->>>>>>> d826eaa (Initial Commit: Dhamma Sphere Laravel Backend)
