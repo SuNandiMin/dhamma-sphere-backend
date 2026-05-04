@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Social\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
+    //register and login routes
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 
