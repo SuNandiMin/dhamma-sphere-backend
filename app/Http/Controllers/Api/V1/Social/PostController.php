@@ -48,9 +48,12 @@ class PostController extends Controller
         return $this->responseSucceed(message: 'Post deleted.');
     }
 
-    public function like(Post $post): JsonResponse
+    public function like(Request $request, Post $post): JsonResponse
     {
-        return $this->responseSucceed(new PostResource($this->postService->like($post)), 'Post liked.');
+        $post = $this->postService->like($request->user(), $post);
+        $message = $post->liked_by_me ? 'Post liked.' : 'Like removed.';
+
+        return $this->responseSucceed(new PostResource($post), $message);
     }
 
     public function share(Post $post): JsonResponse

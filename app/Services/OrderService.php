@@ -38,8 +38,10 @@ class OrderService
                 $book = $books->get($item['id']);
 
                 if (! $book || $book->stock < $item['quantity']) {
+                    $bookLabel = $book?->title ?? 'A book';
+
                     throw ValidationException::withMessages([
-                        'items' => ["{$book?->title ?? 'A book'} does not have enough stock."],
+                        'items' => ["{$bookLabel} does not have enough stock."],
                     ]);
                 }
 
@@ -47,10 +49,12 @@ class OrderService
                 $book->decrement('stock', $item['quantity']);
             }
 
+            $isCashOnDelivery = $paymentMethod->code === 'cash_on_delivery';
+
             $order = Order::query()->create([
                 'user_id' => $user->id,
                 'order_number' => order_number(),
-                'status' => 'Paid',
+                'status' => $isCashOnDelivery ? 'Unpaid' : 'Paid',
                 'total' => $total,
                 'payment_method' => $paymentMethod->code,
                 'customer_name' => $data['name'],
@@ -73,7 +77,7 @@ class OrderService
                 'order_id' => $order->id,
                 'payment_method_id' => $paymentMethod->id,
                 'provider' => $paymentMethod->provider,
-                'status' => 'succeeded',
+                'status' => $isCashOnDelivery ? 'pending' : 'succeeded',
                 'amount' => $total,
                 'transaction_reference' => transaction_reference(),
                 'payload' => [

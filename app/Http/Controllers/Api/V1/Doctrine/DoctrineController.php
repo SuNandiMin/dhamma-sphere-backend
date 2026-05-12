@@ -26,7 +26,23 @@ class DoctrineController extends Controller
 
     public function index(IndexDoctrineRequest $request): JsonResponse
     {
-        $doctrines = $this->doctrineService->list($request->validated());
+        // $doctrines = $this->doctrineService->list($request->validated());
+        $doctrines = Doctrine::query()
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                ->orWhere('topic', 'like', "%{$request->search}%")
+                ->orWhere('content', 'like', "%{$request->search}%");
+            })
+            ->paginate(24);
+
+        if ($doctrines->isEmpty() && $request->search) {
+            $aiResult = $this->aiTranslationService->searchSuggestion($request->search);
+
+            return $this->responseSucceed([
+                'data' => [],
+                'ai_suggestion' => $aiResult,
+            ]);
+        }
 
         return $this->responseWithPagination(DoctrineResource::collection($doctrines), $doctrines);
     }
@@ -64,11 +80,30 @@ class DoctrineController extends Controller
 
     public function translate(TranslateDoctrineRequest $request, Doctrine $doctrine): JsonResponse
     {
-        abort_if(! $doctrine->ai_available, 422, 'AI translation is not available for this doctrine.');
-
-        return $this->responseSucceed(
-            $this->aiTranslationService->translate($doctrine, $request->language, $request->tone),
-            'Translation generated.'
+        // If already translated → return cached result
+        if ($doctrine->ai_available) {
+            return $this->responseSucceed([
+                'translation' => $doctrine->content,
+                'provider' => 'cache',
+                'tone' => $request->tone ?? 'study-friendly',
+            ], 'Translation fetched from cache.');
+        }
+    
+        // Call AI
+        $result = $this->aiTranslationService->translate(
+            $doctrine,
+            $request->language,
+            $request->tone
         );
+    
+        // Save result (important!)
+        $doctrine->update([
+            'content' => $result['translation'],
+            'ai_available' => true,
+            'translator' => 'AI',
+            'language' => $request->language,
+        ]);
+    
+        return $this->responseSucceed($result, 'Translation generated.');
     }
 }

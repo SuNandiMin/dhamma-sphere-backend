@@ -65,6 +65,8 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        $this->call(DoctrineSeeder::class);
+
         $satipatthana = Doctrine::query()->updateOrCreate(['title' => 'Satipatthana Sutta'], [
             'topic' => 'Mindfulness',
             'source_language' => 'Pali',
@@ -138,7 +140,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $user->id,
             'doctrine_id' => $satipatthana->id,
             'body' => 'Today\'s reading of the Satipatthana Sutta reminded me how gentle attention can still be very exact. Curious how others practice this in daily work.',
-        ], ['likes_count' => 23, 'shares_count' => 5]);
+        ], ['likes_count' => 0, 'shares_count' => 5]);
 
         $comment = Comment::query()->firstOrCreate([
             'post_id' => $post->id,
@@ -157,7 +159,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => $publisher->id,
             'doctrine_id' => $metta->id,
             'body' => 'We just added a bilingual commentary on loving-kindness verses and would love feedback from readers working across Burmese and English.',
-        ], ['likes_count' => 41, 'shares_count' => 11]);
+        ], ['likes_count' => 0, 'shares_count' => 11]);
 
         $order = Order::query()->firstOrCreate([
             'user_id' => $user->id,

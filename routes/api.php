@@ -21,7 +21,6 @@ Route::prefix('v1')->group(function (): void {
     Route::post('/doctrines/{doctrine}/translate', [DoctrineController::class, 'translate']);
 
     Route::get('/posts', [PostController::class, 'index']);
-    Route::post('/posts/{post}/like', [PostController::class, 'like']);
     Route::post('/posts/{post}/share', [PostController::class, 'share']);
 
     Route::get('/books', [BookController::class, 'index']);
@@ -32,6 +31,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
 
+        Route::post('/posts/{post}/like', [PostController::class, 'like']);
         Route::post('/posts', [PostController::class, 'store']);
         Route::put('/posts/{post}', [PostController::class, 'update']);
         Route::delete('/posts/{post}', [PostController::class, 'destroy']);
@@ -67,7 +67,6 @@ Route::get('/doctrines-options', [DoctrineController::class, 'options']);
 Route::get('/doctrines/{doctrine}', [DoctrineController::class, 'show']);
 Route::post('/doctrines/{doctrine}/translate', [DoctrineController::class, 'translate']);
 Route::get('/posts', [PostController::class, 'index']);
-Route::post('/posts/{post}/like', [PostController::class, 'like']);
 Route::post('/posts/{post}/share', [PostController::class, 'share']);
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{book}', [BookController::class, 'show']);
@@ -76,6 +75,7 @@ Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
 Route::middleware('auth:api')->group(function (): void {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/posts/{post}/like', [PostController::class, 'like']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
